@@ -193,10 +193,29 @@ module.exports = class S3Plugin {
   getAssetFiles({chunks, options}) {
     var outputPath = options.output.path
 
-    var files = _(chunks)
-      .map('files')
-      .flatten()
-      .map(name => ({path: path.resolve(outputPath, name), name}))
+    var files = _([
+        ...(
+          _(chunks)
+            .map('files')
+            .flatten()
+            .value()
+        ),
+        ...(
+          _(chunks)
+            .map('modules')
+            .flatten()
+            .map('assets')
+            .map((asset) => Object.keys(asset || {})[0])
+            .filter((i) => !!i)
+            .uniq()
+            .value()
+        )
+      ])
+      .uniq()
+      .map(name => {
+        console.log(name);
+        return {path: path.resolve(outputPath, name), name}
+      })
       .value()
 
     return this.filterAllowedFiles(files)

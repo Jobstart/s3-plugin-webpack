@@ -1,7 +1,8 @@
 'use strict';
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 //import ProgressBar from 'progress'
+
 
 var _http = require('http');
 
@@ -68,7 +69,7 @@ var compileError = function compileError(compilation, error) {
   compilation.errors.push(new Error(error));
 };
 
-module.exports = (function () {
+module.exports = function () {
   function S3Plugin() {
     var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
@@ -89,6 +90,7 @@ module.exports = (function () {
     var s3UploadOptions = _options$s3UploadOpti === undefined ? {} : _options$s3UploadOpti;
     var _options$cloudfrontIn = options.cloudfrontInvalidateOptions;
     var cloudfrontInvalidateOptions = _options$cloudfrontIn === undefined ? {} : _options$cloudfrontIn;
+
 
     this.uploadOptions = s3UploadOptions;
     this.cloudfrontInvalidateOptions = cloudfrontInvalidateOptions;
@@ -242,7 +244,12 @@ module.exports = (function () {
 
       var outputPath = options.output.path;
 
-      var files = (0, _lodash2.default)(chunks).map('files').flatten().map(function (name) {
+      var files = (0, _lodash2.default)([].concat(_toConsumableArray((0, _lodash2.default)(chunks).map('files').flatten().value()), _toConsumableArray((0, _lodash2.default)(chunks).map('modules').flatten().map('assets').map(function (asset) {
+        return Object.keys(asset || {})[0];
+      }).filter(function (i) {
+        return !!i;
+      }).uniq().value()))).uniq().map(function (name) {
+        console.log(name);
         return { path: _path2.default.resolve(outputPath, name), name: name };
       }).value();
 
@@ -276,6 +283,7 @@ module.exports = (function () {
       var _options = this.options;
       var directory = _options.directory;
       var htmlFiles = _options.htmlFiles;
+
 
       htmlFiles = htmlFiles || _fs2.default.readdirSync(directory).filter(function (file) {
         return (/\.html$/.test(file)
@@ -316,6 +324,7 @@ module.exports = (function () {
       var _options2 = this.options;
       var include = _options2.include;
       var exclude = _options2.exclude;
+
 
       isInclude = include ? include.test(file) : true;
       isExclude = exclude ? exclude.test(file) : false;
@@ -406,6 +415,7 @@ module.exports = (function () {
       var clientConfig = this.clientConfig;
       var cloudfrontInvalidateOptions = this.cloudfrontInvalidateOptions;
 
+
       return new Promise(function (resolve, reject) {
         if (cloudfrontInvalidateOptions.DistributionId) {
           var cloudfront = new _awsSdk2.default.CloudFront();
@@ -435,4 +445,4 @@ module.exports = (function () {
   }]);
 
   return S3Plugin;
-})();
+}();
